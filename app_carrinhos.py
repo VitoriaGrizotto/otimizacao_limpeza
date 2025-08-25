@@ -32,14 +32,11 @@ def buscar_carrinho():
                 proxima = data_ultima + timedelta(days=180)
                 status, cor = calcular_status(proxima)
                 resultado.config(
-                    text=(
-                        f"Código: {codigo}\n"
-                        f"Última limpeza: {data_ultima.strftime('%d/%m/%Y')}\n"
-                        f"Próxima limpeza: {proxima.strftime('%d/%m/%Y')}\n"
-                        f"Status: {status}"
-                    ),
-                    bg=cor,
-                    fg="white"
+                    text=(f"Código: {codigo}\n"
+                          f"Última limpeza: {data_ultima.strftime('%d/%m/%Y')}\n"
+                          f"Próxima limpeza: {proxima.strftime('%d/%m/%Y')}\n"
+                          f"Status: {status}"),
+                    bg=cor, fg="white"
                 )
                 encontrado = True
                 break
@@ -69,60 +66,59 @@ def abrir_cadastro():
     janela_cadastro = tk.Toplevel(root)
     janela_cadastro.title("Cadastrar Carrinho")
     janela_cadastro.configure(bg="#f8f9fa")
-    janela_cadastro.geometry("350x300")
+    janela_cadastro.geometry("400x320")
     janela_cadastro.resizable(False, False)
 
-    tk.Label(janela_cadastro, text="Cadastro de Carrinho", font=("Segoe UI", 14, "bold"), bg="#f8f9fa", fg="#343a40").pack(pady=10)
+    tk.Label(janela_cadastro, text="Cadastro de Carrinho", 
+             font=("Segoe UI", 16, "bold"), bg="#f8f9fa", fg="#212529").pack(pady=10)
 
     campo_frame = tk.Frame(janela_cadastro, bg="#f8f9fa")
     campo_frame.pack(pady=5)
 
     def campo(texto):
-        lbl = tk.Label(campo_frame, text=texto, font=("Segoe UI", 10), bg="#f8f9fa", fg="#495057", anchor='w')
+        lbl = tk.Label(campo_frame, text=texto, font=("Segoe UI", 11), 
+                       bg="#f8f9fa", fg="#495057", anchor='w')
         lbl.pack(fill='x')
-        entry = tk.Entry(campo_frame, font=("Segoe UI", 10), width=30, relief='solid', borderwidth=1)
-        entry.pack(pady=2)
+        entry = tk.Entry(campo_frame, font=("Segoe UI", 11), width=35, 
+                         relief='solid', borderwidth=1)
+        entry.pack(pady=3)
         return entry
 
     entrada_codigo = campo("Código:")
     entrada_data = campo("Data última limpeza (DD/MM/AAAA):")
     entrada_hist = campo("Histórico:")
 
-    tk.Button(
-        janela_cadastro, text="Cadastrar", command=cadastrar,
-        bg="#0275d8", fg="white", font=("Segoe UI", 10, "bold"),
-        relief="flat", width=25, height=2
-    ).pack(pady=15)
+    tk.Button(janela_cadastro, text="Cadastrar", command=cadastrar,
+              bg="#0275d8", fg="white", font=("Segoe UI", 11, "bold"),
+              relief="flat", width=25, height=2).pack(pady=15)
 
 root = tk.Tk()
 root.title("Controle de Limpeza de Carrinhos")
-root.geometry("480x420")
+root.state('zoomed')  
 root.configure(bg="#f8f9fa")
-root.resizable(False, False)
 
-tk.Label(root, text="Controle de Limpeza", font=("Segoe UI", 18, "bold"), bg="#f8f9fa", fg="#343a40").pack(pady=15)
+tk.Label(root, text="Controle de Limpeza de Carrinhos",
+         font=("Segoe UI", 22, "bold"),
+         bg="#f8f9fa", fg="#212529").pack(pady=20)
 
-entrada = tk.Entry(root, font=("Segoe UI", 14), width=25, justify="center", relief="solid", borderwidth=1)
-entrada.pack(pady=5)
+entrada = tk.Entry(root, font=("Segoe UI", 16), width=40, justify="center", 
+                   relief="solid", borderwidth=1)
+entrada.pack(pady=10)
 entrada.bind("<Return>", lambda e: buscar_carrinho())
 
 btn_frame = tk.Frame(root, bg="#f8f9fa")
-btn_frame.pack(pady=10)
+btn_frame.pack(pady=15)
 
-tk.Button(
-    btn_frame, text="Consultar", command=buscar_carrinho,
-    bg="#5cb85c", fg="white", font=("Segoe UI", 10, "bold"),
-    width=20, relief="flat"
-).grid(row=0, column=0, padx=5)
+tk.Button(btn_frame, text="Consultar", command=buscar_carrinho,
+          bg="#5cb85c", fg="white", font=("Segoe UI", 12, "bold"),
+          width=20, relief="flat", height=2).grid(row=0, column=0, padx=10)
 
-tk.Button(
-    btn_frame, text="Novo Cadastro", command=abrir_cadastro,
-    bg="#6c757d", fg="white", font=("Segoe UI", 10, "bold"),
-    width=20, relief="flat"
-).grid(row=0, column=1, padx=5)
+tk.Button(btn_frame, text="Novo Cadastro", command=abrir_cadastro,
+          bg="#6c757d", fg="white", font=("Segoe UI", 12, "bold"),
+          width=20, relief="flat", height=2).grid(row=0, column=1, padx=10)
 
-resultado = tk.Label(root, text="", font=("Segoe UI", 12), width=50, height=6,
-                     bg="white", relief="groove", wraplength=400, justify="left")
-resultado.pack(pady=20)
+resultado = tk.Label(root, text="", font=("Segoe UI", 14), width=60, height=8,
+                     bg="white", relief="groove", wraplength=800, justify="left")
+resultado.pack(pady=30)
 
 root.mainloop()
