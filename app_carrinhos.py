@@ -61,6 +61,13 @@ def cadastrar():
     except ValueError:
         messagebox.showerror("Erro", "Data inválida! Use DD/MM/AAAA.")
         return
+    
+    with open(CSV_FILE, 'r', newline='', encoding='utf-8') as csvfile:
+        leitor = csv.DictReader(csvfile)
+        for row in leitor:
+            if row['codigo'] == codigo:
+                messagebox.showwarning("Aviso", f"Esse carrinho '{codigo}' já existe. Por favor, cadastre um carrinho que ainda não foi cadastrada ou edite um carrinho existente.")
+                return
 
     with open(CSV_FILE, 'a', newline='', encoding='utf-8') as csvfile:
         escritor = csv.writer(csvfile)
@@ -159,6 +166,52 @@ def editar():
     tk.Button(janela_edicao, text="Salvar", command=salvar_edicao,
               bg="#0275d8", fg="white", font=("Segoe UI", 13, "bold"),
               relief="flat", height=2).pack(pady=15, fill="x", padx=20)
+    
+# ----------- FUNÇÃO GERAR RELATÓRIO -----------
+def gerar_relatorio():
+    hoje = datetime.today().date()
+    proximo_mes = (hoje.month % 12) + 1
+    ano_proximo = hoje.year + 1 if hoje.month == 12 else hoje.year
+
+    carrinhos_proximo_mes = []
+
+    with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
+        leitor = csv.DictReader(csvfile)
+        for linha in leitor:
+            data_ultima = datetime.strptime(linha['data_ultima_limpeza'], "%Y-%m-%d").date()
+            proxima = data_ultima + timedelta(days=180)
+
+            if proxima.month == proximo_mes and proxima.year == ano_proximo:
+                carrinhos_proximo_mes.append({
+                    "codigo": linha["codigo"],
+                    "ultima": data_ultima.strftime("%d/%m/%Y"),
+                    "proxima": proxima.strftime("%d/%m/%Y"),
+                    "historico": linha["historico"]
+                })
+
+    # Salva relatório em TXT formatado
+    with open("relatorio_carrinhos_vencidas.txt", "w", encoding="utf-8") as f:
+        f.write("RELATÓRIO DE LIMPEZA DE CARRINHOS\n")
+        f.write(f"Referente ao mês {proximo_mes:02d}/{ano_proximo}\n")
+        f.write("=" * 50 + "\n\n")
+
+        if carrinhos_proximo_mes:
+            for carrinho in carrinhos_proximo_mes:
+                f.write(f"Carrinho: {carrinho['codigo']}\n")
+                f.write(f"Última Limpeza: {carrinho['ultima']}\n")
+                f.write(f"Próxima Limpeza: {carrinho['proxima']}\n")
+                f.write(f"Histórico: {carrinho['historico']}\n")
+                f.write("-" * 50 + "\n")
+        else:
+            f.write("Não há carrinhos com vencimento para este período.\n")
+
+    if carrinhos_proximo_mes:
+        messagebox.showinfo("Relatório Gerado",
+                            f"O relatório de {proximo_mes:02d}/{ano_proximo} foi gerado em 'relatorio_carrinhos_vencidos.txt' com sucesso!")
+    else:
+        messagebox.showinfo("Relatório Gerado",
+                            f"Não há carrinhos com vencimento em {proximo_mes:02d}/{ano_proximo}.")
+
 
 # ---------- INTERFACE PRINCIPAL --------------
 
@@ -199,8 +252,18 @@ tk.Button(btn_frame, text="Editar", command=editar,
           bg="#f0ad4e", fg="white", font=("Segoe UI", 14, "bold"),
           relief="flat", height=2, width=20).grid(row=0, column=2, padx=15)
 
+tk.Button(btn_frame, text="Gerar Relatório", command=gerar_relatorio,
+          bg="#f8f9fa", fg="#495057", font=("Segoe UI", 13),
+          relief="groove", height=2, width=20).grid(row=0, column=3, padx=15)
+
 resultado = tk.Label(main_frame, text="", font=("Segoe UI", 16),
                      bg="white", relief="groove", wraplength=1000, justify="left")
 resultado.grid(row=2, column=0, sticky="nsew", padx=50, pady=30)
+
+# ----------- EXECUTA RELATÓRIO AUTOMÁTICO NO FIM DO MÊS -----------
+hoje = datetime.today().date()
+amanha = hoje + timedelta(days=1)
+if amanha.day == 1:  # se amanhã for dia 1, significa que hoje é o último dia do mês
+    gerar_relatorio()
 
 root.mainloop()
