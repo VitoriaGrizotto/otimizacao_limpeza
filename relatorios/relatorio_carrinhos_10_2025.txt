@@ -2,23 +2,23 @@ RELATÓRIO DE LIMPEZA DE CARRINHOS
 Referente ao mês 10/2025
 ==================================================
 
-Carrinho: novo teste
-Última Limpeza: 14/04/2025
-Próxima Limpeza: 11/10/2025
+carrinho: novo teste
+Última: 14/04/2025
+Próxima: 11/10/2025
 Histórico: 
 --------------------------------------------------
-Carrinho: novo_teste1
-Última Limpeza: 14/04/2025
-Próxima Limpeza: 11/10/2025
+carrinho: novo_teste1
+Última: 14/04/2025
+Próxima: 11/10/2025
 Histórico: 
 --------------------------------------------------
-Carrinho: novo_teste2
-Última Limpeza: 14/04/2025
-Próxima Limpeza: 11/10/2025
+carrinho: novo_teste2
+Última: 14/04/2025
+Próxima: 11/10/2025
 Histórico: 
 --------------------------------------------------
-Carrinho: novo_teste3
-Última Limpeza: 14/04/2025
-Próxima Limpeza: 11/10/2025
+carrinho: novo_teste3
+Última: 14/04/2025
+Próxima: 11/10/2025
 Histórico: 
 --------------------------------------------------
