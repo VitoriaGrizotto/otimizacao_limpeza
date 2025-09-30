@@ -1,9 +1,0 @@
-RELATÓRIO DE LIMPEZA DE CARRINHOS
-Referente ao mês 10/2025
-==================================================
-
-carrinho: teste5
-Última: 20/04/2025
-Próxima: 17/10/2025
-Histórico: 
---------------------------------------------------
