@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 from datetime import datetime, timedelta
 import csv, os
-import qrcode
+# import qrcode
 from PIL import Image, ImageTk
 import openpyxl
 from openpyxl.styles import Font, Border, Side, Alignment, PatternFill 
@@ -109,73 +109,73 @@ def buscar_carrinho():
     resultado_label.config(text="❌ carrinho não encontrado", fg="#7f8c8d")
 
 
-def gerar_e_mostrar_qrcode(codigo, data_limpeza_str, periodicidade_dias_str):
-    conteudo_qrcode = f"Codigo: {codigo}\nData: {data_limpeza_str}\nPeriodicidade: {periodicidade_dias_str} dias"
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_L,
-        box_size=4,
-        border=2,
-    )
-    qr.add_data(conteudo_qrcode)
-    qr.make(fit=True)
-    img_qr = qr.make_image(fill_color="black", back_color="white").convert("RGB")
+# def gerar_e_mostrar_qrcode(codigo, data_limpeza_str, periodicidade_dias_str):
+#     conteudo_qrcode = f"Codigo: {codigo}\nData: {data_limpeza_str}\nPeriodicidade: {periodicidade_dias_str} dias"
+#     qr = qrcode.QRCode(
+#         version=1,
+#         error_correction=qrcode.constants.ERROR_CORRECT_L,
+#         box_size=4,
+#         border=2,
+#     )
+#     qr.add_data(conteudo_qrcode)
+#     qr.make(fit=True)
+#     img_qr = qr.make_image(fill_color="black", back_color="white").convert("RGB")
 
-    janela_qrcode = tk.Toplevel(root)
-    janela_qrcode.title(f"QR Code: carrinho {codigo}")
-    janela_qrcode.configure(bg="#f4f6f9")
-    janela_qrcode.resizable(False, False)
-    janela_qrcode.transient(root)
-    janela_qrcode.grab_set()
+#     janela_qrcode = tk.Toplevel(root)
+#     janela_qrcode.title(f"QR Code: carrinho {codigo}")
+#     janela_qrcode.configure(bg="#f4f6f9")
+#     janela_qrcode.resizable(False, False)
+#     janela_qrcode.transient(root)
+#     janela_qrcode.grab_set()
 
-    main_frame_qr = tk.Frame(janela_qrcode, bg="#f4f6f9", padx=20, pady=20)
-    main_frame_qr.pack(expand=True, fill="both")
+#     main_frame_qr = tk.Frame(janela_qrcode, bg="#f4f6f9", padx=20, pady=20)
+#     main_frame_qr.pack(expand=True, fill="both")
 
-    tk.Label(
-        main_frame_qr,
-        text=f"QR Code para carrinho {codigo}",
-        font=("Segoe UI", 18, "bold"),
-        bg="#f4f6f9",
-        fg="#2c3e50",
-    ).pack(pady=(0, 15))
+#     tk.Label(
+#         main_frame_qr,
+#         text=f"QR Code para carrinho {codigo}",
+#         font=("Segoe UI", 18, "bold"),
+#         bg="#f4f6f9",
+#         fg="#2c3e50",
+#     ).pack(pady=(0, 15))
 
-    qr_image_frame = tk.Frame(main_frame_qr, bg="#ffffff", bd=2, relief="solid")
-    qr_image_frame.pack(pady=10)
-    img_tk = ImageTk.PhotoImage(img_qr)
-    lbl_qr = tk.Label(qr_image_frame, image=img_tk, bg="#ffffff")
-    lbl_qr.image = img_tk
-    lbl_qr.pack(padx=10, pady=10)
+#     qr_image_frame = tk.Frame(main_frame_qr, bg="#ffffff", bd=2, relief="solid")
+#     qr_image_frame.pack(pady=10)
+#     img_tk = ImageTk.PhotoImage(img_qr)
+#     lbl_qr = tk.Label(qr_image_frame, image=img_tk, bg="#ffffff")
+#     lbl_qr.image = img_tk
+#     lbl_qr.pack(padx=10, pady=10)
 
-    tk.Label(
-        main_frame_qr,
-        text=f"Código: {codigo} | Data: {data_limpeza_str} | Periodicidade: {periodicidade_dias_str} dias",
-        font=("Segoe UI", 12),
-        bg="#f4f6f9",
-        fg="#007bff",
-    ).pack(pady=10)
+#     tk.Label(
+#         main_frame_qr,
+#         text=f"Código: {codigo} | Data: {data_limpeza_str} | Periodicidade: {periodicidade_dias_str} dias",
+#         font=("Segoe UI", 12),
+#         bg="#f4f6f9",
+#         fg="#007bff",
+#     ).pack(pady=10)
 
-    def salvar_qrcode_png():
-        file_path = filedialog.asksaveasfilename(
-            defaultextension=".png",
-            filetypes=[("PNG files", "*.png")],
-            initialfile=f"qrcode_carrinho_{codigo}.png",
-        )
-        if file_path:
-            img_qr.save(file_path)
-            messagebox.showinfo("Sucesso", f"QR Code salvo em:\n{file_path}")
+#     def salvar_qrcode_png():
+#         file_path = filedialog.asksaveasfilename(
+#             defaultextension=".png",
+#             filetypes=[("PNG files", "*.png")],
+#             initialfile=f"qrcode_carrinho_{codigo}.png",
+#         )
+#         if file_path:
+#             img_qr.save(file_path)
+#             messagebox.showinfo("Sucesso", f"QR Code salvo em:\n{file_path}")
 
-    btn_salvar_qr = tk.Button(
-        main_frame_qr, text="⬇️ Salvar como PNG", command=salvar_qrcode_png
-    )
-    estilo_botao(btn_salvar_qr, "#2980b9", "#2471a3")
-    btn_salvar_qr.pack(pady=20)
+#     btn_salvar_qr = tk.Button(
+#         main_frame_qr, text="⬇️ Salvar como PNG", command=salvar_qrcode_png
+#     )
+#     estilo_botao(btn_salvar_qr, "#2980b9", "#2471a3")
+#     btn_salvar_qr.pack(pady=20)
 
-    janela_qrcode.update_idletasks()
-    janela_qrcode.geometry(
-        f"{main_frame_qr.winfo_reqwidth()+40}x{main_frame_qr.winfo_reqheight()+40}"
-    )
-    janela_qrcode.wait_window(janela_qrcode)
-    root.grab_release()
+#     janela_qrcode.update_idletasks()
+#     janela_qrcode.geometry(
+#         f"{main_frame_qr.winfo_reqwidth()+40}x{main_frame_qr.winfo_reqheight()+40}"
+#     )
+#     janela_qrcode.wait_window(janela_qrcode)
+#     root.grab_release()
 
 
 def cadastrar():
@@ -208,10 +208,10 @@ def cadastrar():
                 messagebox.showwarning("Aviso", f"carrinho '{codigo}' já existe.")
                 return
 
-    if messagebox.askyesno(
-        "Gerar QR Code?", f"Deseja gerar QR Code para a Carrinho '{codigo}'?"
-    ):
-        gerar_e_mostrar_qrcode(codigo, data, periodicidade_str)
+    # if messagebox.askyesno(
+    #     "Gerar QR Code?", f"Deseja gerar QR Code para a Carrinho '{codigo}'?"
+    # ):
+    #     gerar_e_mostrar_qrcode(codigo, data, periodicidade_str)
 
     with open(CSV_FILE, "a", newline="", encoding="utf-8") as csvfile:
         csv.writer(csvfile).writerow([codigo, data_formatada.isoformat(), historico, str(periodicidade_dias)])
