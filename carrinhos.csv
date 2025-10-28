@@ -1,7 +1,12 @@
 codigo,data_ultima_limpeza,historico,periodicidade_dias
-teste_periodicidade,2025-09-29,,60
+teste_periodicidade,2025-10-15,,60
 teste2_periodicidade,2025-10-15,,7
-teste,2025-09-28,teste,60
+teste,2025-10-02,teste,19
 teste1,2025-08-29,,60
 teste3,2025-07-25,TESTE,180
 teste_qrcode,2025-09-29,teste,180
+lote,2025-10-16,TESTE,130
+lote 2,2025-10-16,TESTE,130
+lote 3,2025-10-16,TESTE,130
+teste-de-mes,2025-10-27,,180
+teste_again,2025-10-10,teste,180

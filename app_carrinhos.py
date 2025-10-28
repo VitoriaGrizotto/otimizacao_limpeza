@@ -1,9 +1,8 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, ttk
 from datetime import datetime, timedelta
 import csv, os
-# import qrcode
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk # Assumindo que PIL está instalado
 import openpyxl
 from openpyxl.styles import Font, Border, Side, Alignment, PatternFill 
 from openpyxl.utils import get_column_letter
@@ -36,7 +35,7 @@ else:
                     writer.writerow(row + ["180"])
 
             os.remove(CSV_FILE)
-            os.rename(temp_file, CSV_FILE)
+            os.rename(temp_file, CSV_FILE) 
 
 
 # -------- Funções --------
@@ -109,75 +108,6 @@ def buscar_carrinho():
     resultado_label.config(text="❌ carrinho não encontrado", fg="#7f8c8d")
 
 
-# def gerar_e_mostrar_qrcode(codigo, data_limpeza_str, periodicidade_dias_str):
-#     conteudo_qrcode = f"Codigo: {codigo}\nData: {data_limpeza_str}\nPeriodicidade: {periodicidade_dias_str} dias"
-#     qr = qrcode.QRCode(
-#         version=1,
-#         error_correction=qrcode.constants.ERROR_CORRECT_L,
-#         box_size=4,
-#         border=2,
-#     )
-#     qr.add_data(conteudo_qrcode)
-#     qr.make(fit=True)
-#     img_qr = qr.make_image(fill_color="black", back_color="white").convert("RGB")
-
-#     janela_qrcode = tk.Toplevel(root)
-#     janela_qrcode.title(f"QR Code: carrinho {codigo}")
-#     janela_qrcode.configure(bg="#f4f6f9")
-#     janela_qrcode.resizable(False, False)
-#     janela_qrcode.transient(root)
-#     janela_qrcode.grab_set()
-
-#     main_frame_qr = tk.Frame(janela_qrcode, bg="#f4f6f9", padx=20, pady=20)
-#     main_frame_qr.pack(expand=True, fill="both")
-
-#     tk.Label(
-#         main_frame_qr,
-#         text=f"QR Code para carrinho {codigo}",
-#         font=("Segoe UI", 18, "bold"),
-#         bg="#f4f6f9",
-#         fg="#2c3e50",
-#     ).pack(pady=(0, 15))
-
-#     qr_image_frame = tk.Frame(main_frame_qr, bg="#ffffff", bd=2, relief="solid")
-#     qr_image_frame.pack(pady=10)
-#     img_tk = ImageTk.PhotoImage(img_qr)
-#     lbl_qr = tk.Label(qr_image_frame, image=img_tk, bg="#ffffff")
-#     lbl_qr.image = img_tk
-#     lbl_qr.pack(padx=10, pady=10)
-
-#     tk.Label(
-#         main_frame_qr,
-#         text=f"Código: {codigo} | Data: {data_limpeza_str} | Periodicidade: {periodicidade_dias_str} dias",
-#         font=("Segoe UI", 12),
-#         bg="#f4f6f9",
-#         fg="#007bff",
-#     ).pack(pady=10)
-
-#     def salvar_qrcode_png():
-#         file_path = filedialog.asksaveasfilename(
-#             defaultextension=".png",
-#             filetypes=[("PNG files", "*.png")],
-#             initialfile=f"qrcode_carrinho_{codigo}.png",
-#         )
-#         if file_path:
-#             img_qr.save(file_path)
-#             messagebox.showinfo("Sucesso", f"QR Code salvo em:\n{file_path}")
-
-#     btn_salvar_qr = tk.Button(
-#         main_frame_qr, text="⬇️ Salvar como PNG", command=salvar_qrcode_png
-#     )
-#     estilo_botao(btn_salvar_qr, "#2980b9", "#2471a3")
-#     btn_salvar_qr.pack(pady=20)
-
-#     janela_qrcode.update_idletasks()
-#     janela_qrcode.geometry(
-#         f"{main_frame_qr.winfo_reqwidth()+40}x{main_frame_qr.winfo_reqheight()+40}"
-#     )
-#     janela_qrcode.wait_window(janela_qrcode)
-#     root.grab_release()
-
-
 def cadastrar():
     codigo = entrada_codigo.get().strip()
     data = entrada_data.get().strip()
@@ -207,11 +137,6 @@ def cadastrar():
             if row["codigo"] == codigo:
                 messagebox.showwarning("Aviso", f"carrinho '{codigo}' já existe.")
                 return
-
-    # if messagebox.askyesno(
-    #     "Gerar QR Code?", f"Deseja gerar QR Code para a Carrinho '{codigo}'?"
-    # ):
-    #     gerar_e_mostrar_qrcode(codigo, data, periodicidade_str)
 
     with open(CSV_FILE, "a", newline="", encoding="utf-8") as csvfile:
         csv.writer(csvfile).writerow([codigo, data_formatada.isoformat(), historico, str(periodicidade_dias)])
@@ -268,7 +193,7 @@ def abrir_cadastro():
     root.grab_release()
 
 
-def editar():
+def editar_carrinho_unico():
     global carrinho_atual
     if not carrinho_atual:
         messagebox.showwarning("Aviso", "Consulte um carrinho para editar.")
@@ -375,6 +300,204 @@ def editar():
     janela_edicao.wait_window(janela_edicao)
     root.grab_release()
 
+def abrir_edicao_em_lote():
+    janela_selecao_carrinhos = tk.Toplevel(root)
+    janela_selecao_carrinhos.title("✏️ Editar Vários Carrinhos")
+    janela_selecao_carrinhos.configure(bg="#f4f6f9")
+    janela_selecao_carrinhos.geometry("800x600")
+    janela_selecao_carrinhos.transient(root)
+    janela_selecao_carrinhos.grab_set()
+
+    tk.Label(
+        janela_selecao_carrinhos,
+        text="Selecione os carrinhos para edição em lote",
+        font=("Segoe UI", 18, "bold"),
+        bg="#f4f6f9",
+        fg="#2c3e50",
+    ).pack(pady=10)
+
+    frame_tree = tk.Frame(janela_selecao_carrinhos, bg="white", relief="solid", bd=1)
+    frame_tree.pack(fill="both", expand=True, padx=20, pady=10)
+
+    style = ttk.Style()
+    style.theme_use("clam")
+    style.configure("Treeview.Heading", font=("Segoe UI", 12, "bold"), background="#34495e", foreground="white")
+    style.configure("Treeview", font=("Segoe UI", 11), rowheight=25)
+    style.map('Treeview', background=[('selected', '#2980b9')])
+
+    tree = ttk.Treeview(frame_tree, columns=("codigo", "data_ultima_limpeza", "periodicidade_dias", "historico"), show="headings", selectmode="extended")
+    tree.heading("codigo", text="Código")
+    tree.heading("data_ultima_limpeza", text="Última Limpeza (DD/MM/AAAA)")
+    tree.heading("periodicidade_dias", text="Periodicidade (dias)")
+    tree.heading("historico", text="Histórico")
+
+    tree.column("codigo", width=100, anchor="center")
+    tree.column("data_ultima_limpeza", width=200, anchor="center")
+    tree.column("periodicidade_dias", width=150, anchor="center")
+    tree.column("historico", width=300, anchor="w")
+
+    # Scrollbar
+    scrollbar = ttk.Scrollbar(frame_tree, orient="vertical", command=tree.yview)
+    tree.configure(yscrollcommand=scrollbar.set)
+    scrollbar.pack(side="right", fill="y")
+    tree.pack(side="left", fill="both", expand=True)
+
+    with open(CSV_FILE, newline="", encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            tree.insert("", "end", iid=row["codigo"], values=(
+                row["codigo"],
+                datetime.strptime(row["data_ultima_limpeza"], "%Y-%m-%d").strftime("%d/%m/%Y"), 
+                row.get("periodicidade_dias", "180"),
+                row["historico"]
+            ))
+
+    def prosseguir_edicao_em_lote():
+        selecionados = tree.selection() 
+        if not selecionados:
+            messagebox.showwarning("Aviso", "Nenhum carrinho selecionado para edição.")
+            return
+
+        janela_selecao_carrinhos.destroy()
+        abrir_form_edicao_lote(list(selecionados)) 
+
+    btn_selecionar = tk.Button(janela_selecao_carrinhos, text="Prosseguir para Edição", command=prosseguir_edicao_em_lote)
+    estilo_botao(btn_selecionar, "#f39c12", "#d68910")
+    btn_selecionar.pack(pady=15, fill="x", padx=20)
+
+    janela_selecao_carrinhos.wait_window(janela_selecao_carrinhos)
+    root.grab_release()
+
+def abrir_form_edicao_lote(codigos_selecionados):
+    janela_edicao_lote = tk.Toplevel(root)
+    janela_edicao_lote.title(f"✏️ Editar {len(codigos_selecionados)} Carrinhos")
+    janela_edicao_lote.configure(bg="#f4f6f9")
+    janela_edicao_lote.geometry("500x650") 
+    janela_edicao_lote.transient(root)
+    janela_edicao_lote.grab_set()
+
+    tk.Label(
+        janela_edicao_lote,
+        text=f"Editar em Lote ({len(codigos_selecionados)} carrinhos)",
+        font=("Segoe UI", 18, "bold"),
+        bg="#f4f6f9",
+        fg="#2c3e50",
+    ).pack(pady=10)
+
+    tk.Label(
+        janela_edicao_lote,
+        text="Preencha APENAS os campos que deseja alterar para todos os carrinhos selecionados.\nDeixe em branco para MANTER o valor atual.",
+        font=("Segoe UI", 10, "italic"),
+        bg="#f4f6f9",
+        fg="#7f8c8d",
+        justify="center"
+    ).pack(pady=(0, 10))
+
+    tk.Label(
+        janela_edicao_lote,
+        text="Carrinhos Selecionados:",
+        font=("Segoe UI", 12, "bold"),
+        bg="#f4f6f9",
+        fg="#2c3e50",
+    ).pack(pady=(10, 0))
+
+    text_carrinhos = tk.Text(janela_edicao_lote, height=5, width=40, font=("Segoe UI", 10), wrap="word", relief="solid", bd=1)
+    text_carrinhos.pack(pady=5, padx=20, fill="x")
+    for codigo in codigos_selecionados:
+        text_carrinhos.insert(tk.END, f"- {codigo}\n")
+    text_carrinhos.config(state=tk.DISABLED)
+
+    scrollbar_text = tk.Scrollbar(janela_edicao_lote, command=text_carrinhos.yview)
+    scrollbar_text.pack(side="right", fill="y")
+    text_carrinhos.config(yscrollcommand=scrollbar_text.set)
+
+    frame = tk.Frame(janela_edicao_lote, bg="white", relief="solid", bd=1)
+    frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+    tk.Label(
+        frame,
+        text="📅 Nova Data de Limpeza (DD/MM/AAAA):",
+        font=("Segoe UI", 13),
+        bg="white",
+        fg="#495057",
+    ).pack(pady=(10, 0))
+    entrada_nova_data = tk.Entry(frame, font=("Segoe UI", 13))
+    entrada_nova_data.pack(fill="x", padx=20, pady=5, ipady=5)
+
+    tk.Label(
+        frame, text="📝 Novo Histórico (será SOBRESCRITO):", font=("Segoe UI", 13), bg="white", fg="#495057"
+    ).pack(pady=(10, 0))
+    entrada_novo_historico = tk.Entry(frame, font=("Segoe UI", 13))
+    entrada_novo_historico.pack(fill="x", padx=20, pady=5, ipady=5)
+
+    tk.Label(
+        frame, text="🗓️ Nova Periodicidade (dias):", font=("Segoe UI", 13), bg="white", fg="#495057"
+    ).pack(pady=(10, 0))
+    entrada_nova_periodicidade = tk.Entry(frame, font=("Segoe UI", 13))
+    entrada_nova_periodicidade.pack(fill="x", padx=20, pady=5, ipady=5)
+
+    def aplicar_edicoes_lote():
+        nova_data_str = entrada_nova_data.get().strip()
+        novo_historico = entrada_novo_historico.get().strip()
+        nova_periodicidade_str = entrada_nova_periodicidade.get().strip()
+
+        data_formatada = None
+        if nova_data_str:
+            try:
+                data_formatada = datetime.strptime(nova_data_str, "%d/%m/%Y").date()
+                if data_formatada > datetime.today().date():
+                    messagebox.showerror("Erro", "Data futura inválida.")
+                    return
+            except ValueError:
+                messagebox.showerror("Erro", "Data inválida! Use DD/MM/AAAA.")
+                return
+        
+        nova_periodicidade_dias = None
+        if nova_periodicidade_str:
+            try:
+                nova_periodicidade_dias = int(nova_periodicidade_str)
+                if nova_periodicidade_dias <= 0:
+                    messagebox.showerror("Erro", "Periodicidade deve ser um número inteiro positivo.")
+                    return
+            except ValueError:
+                messagebox.showerror("Erro", "Periodicidade inválida! Digite um número de dias.")
+                return
+
+        if not nova_data_str and not novo_historico and not nova_periodicidade_str:
+            messagebox.showwarning("Aviso", "Nenhum campo foi preenchido para edição. Nenhuma alteração será aplicada.")
+            return
+
+        linhas_atualizadas = []
+        with open(CSV_FILE, newline="", encoding="utf-8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            header = reader.fieldnames
+            for linha in reader:
+                if linha["codigo"] in codigos_selecionados:
+                    if data_formatada:
+                        linha["data_ultima_limpeza"] = data_formatada.isoformat()
+                    if novo_historico:
+                        linha["historico"] = novo_historico
+                    if nova_periodicidade_dias:
+                        linha["periodicidade_dias"] = str(nova_periodicidade_dias)
+                linhas_atualizadas.append(linha)
+        
+        with open(CSV_FILE, "w", newline="", encoding="utf-8") as csvfile:
+            escritor = csv.DictWriter(csvfile, fieldnames=header)
+            escritor.writeheader()
+            escritor.writerows(linhas_atualizadas)
+        
+        messagebox.showinfo("Sucesso", f"{len(codigos_selecionados)} carrinhos foram atualizados com sucesso!")
+        janela_edicao_lote.destroy()
+        if carrinho_atual and carrinho_atual["codigo"] in codigos_selecionados:
+            buscar_carrinho() 
+
+    btn_aplicar = tk.Button(janela_edicao_lote, text="Aplicar Edições em Lote", command=aplicar_edicoes_lote)
+    estilo_botao(btn_aplicar, "#27ae60", "#229954")
+    btn_aplicar.pack(pady=15, fill="x", padx=20)
+
+    janela_edicao_lote.wait_window(janela_edicao_lote)
+    root.grab_release()
+
 
 def gerar_relatorio():
     hoje = datetime.today().date()
@@ -461,8 +584,6 @@ def gerar_relatorio():
             sheet.cell(row=row_num, column=3, value=c['proxima']).number_format = 'DD/MM/YYYY'
             sheet.cell(row=row_num, column=4, value=c['periodicidade']).alignment = alignment_center
             sheet.cell(row=row_num, column=5, value=c['status_vencimento']).alignment = alignment_center
-            sheet.cell(row=row_num, column=6, value=c['historico']).alignment = alignment_left
-
             status_cell = sheet.cell(row=row_num, column=5)
             if c['status_vencimento'] == "VENCIDO":
                 status_cell.fill = fill_vencido
@@ -470,7 +591,7 @@ def gerar_relatorio():
             elif c['status_vencimento'] == "A VENCER":
                 status_cell.fill = fill_avencer
                 status_cell.font = Font(color='000000', bold=True)
-
+            sheet.cell(row=row_num, column=6, value=c['historico']).alignment = alignment_left
 
             for col_idx in range(1, len(headers) + 1):
                 cell = sheet.cell(row=row_num, column=col_idx)
@@ -539,6 +660,7 @@ def verificar_senha(callback_funcao):
     y = root.winfo_y() + (root.winfo_height() // 2) - (janela_senha.winfo_height() // 2)
     janela_senha.geometry(f"+{x}+{y}")
 
+
 root = tk.Tk()
 root.title(" Controle de Limpeza de Carrinhos")
 root.state("zoomed")
@@ -568,16 +690,36 @@ entrada.pack(pady=30, padx=200, ipady=10, fill="x")
 
 btn_frame = tk.Frame(main_frame, bg="white")
 btn_frame.pack(pady=20)
-btns = [
+
+btn_editar = tk.Menubutton(btn_frame, text="✏️ Editar", relief="flat", font=("Segoe UI", 13, "bold"),
+                           bg="#f39c12", fg="white", width=18, height=2, bd=0,
+                           highlightthickness=0, cursor="hand2", activebackground="#d68910")
+estilo_botao(btn_editar, "#f39c12", "#d68910") 
+btn_editar.grid(row=0, column=2, padx=15) 
+
+menu_edicao = tk.Menu(btn_editar, tearoff=0, font=("Segoe UI", 12))
+menu_edicao.add_command(label="Editar Carrinho Selecionado", command=lambda: verificar_senha(editar_carrinho_unico))
+menu_edicao.add_command(label="Editar em Lote", command=lambda: verificar_senha(abrir_edicao_em_lote))
+btn_editar["menu"] = menu_edicao
+
+btns_esquerda = [
     ("🔍 Consultar", buscar_carrinho, "#34495e", "#2c3e50"),
-    ("➕ Novo Cadastro", abrir_cadastro, "#27ae60", "#229954"), 
-    ("✏️ Editar", lambda: verificar_senha(editar), "#f39c12", "#d68910"), 
+    ("➕ Novo Cadastro", abrir_cadastro, "#27ae60", "#229954"),
+]
+
+btns_direita = [
     ("📄 Relatório", gerar_relatorio, "#2980b9", "#2471a3"),
 ]
-for i, (txt, cmd, c1, c2) in enumerate(btns):
+
+for i, (txt, cmd, c1, c2) in enumerate(btns_esquerda):
     b = tk.Button(btn_frame, text=txt, command=cmd)
     estilo_botao(b, c1, c2)
     b.grid(row=0, column=i, padx=15)
+
+for i, (txt, cmd, c1, c2) in enumerate(btns_direita):
+    b = tk.Button(btn_frame, text=txt, command=cmd)
+    estilo_botao(b, c1, c2)
+    b.grid(row=0, column=i + 3, padx=15) 
 
 resultado_frame = tk.Frame(
     main_frame,
