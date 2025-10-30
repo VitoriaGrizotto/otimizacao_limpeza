@@ -319,6 +319,7 @@ def abrir_edicao_em_lote():
     frame_tree = tk.Frame(janela_selecao_carrinhos, bg="white", relief="solid", bd=1)
     frame_tree.pack(fill="both", expand=True, padx=20, pady=10)
 
+    #Configurar o Treeview
     style = ttk.Style()
     style.theme_use("clam")
     style.configure("Treeview.Heading", font=("Segoe UI", 12, "bold"), background="#34495e", foreground="white")
